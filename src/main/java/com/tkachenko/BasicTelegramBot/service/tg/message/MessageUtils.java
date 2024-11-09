@@ -1,5 +1,6 @@
 package com.tkachenko.BasicTelegramBot.service.tg.message;
 
+import com.tkachenko.BasicTelegramBot.model.MessageTG;
 import com.tkachenko.BasicTelegramBot.model.User;
 import com.tkachenko.BasicTelegramBot.repository.MessageRepository;
 import com.tkachenko.BasicTelegramBot.repository.UserRepository;
@@ -22,25 +23,23 @@ public class MessageUtils {
         this.messageRepository = messageRepository;
     }
 
-    public User userCheck(Message message)
-    {
-        return userRepository.findById(message.getChatId()).orElseGet(() -> {
-            User newUser = new User();
-            newUser.setId(message.getChatId());
-            newUser.setFirstName(message.getFrom().getFirstName());
-            newUser.setLastName(message.getFrom().getLastName());
-            newUser.setUsername(message.getFrom().getUserName());
-            return userRepository.save(newUser);
-        });
+    public User userCheck(Message message) {
+        return userRepository.findByChatIdAndUserName(message.getChatId(),
+                        message.getFrom().getUserName()).orElseGet(() -> userRepository.save(
+                        new User(message.getChatId(),
+                                message.getFrom().getFirstName(),
+                                message.getFrom().getLastName(),
+                                message.getFrom().getUserName())
+                ));
     }
 
     public void saveMessage(User user, Message message)
     {
         // Сохраняем сообщение
-        com.tkachenko.BasicTelegramBot.model.Message savedMessage = new com.tkachenko.BasicTelegramBot.model.Message();
-        savedMessage.setUser(user);
-        savedMessage.setText(message.getText());
-        savedMessage.setTimestamp(LocalDateTime.now());
-        messageRepository.save(savedMessage);
+        MessageTG savedMessageTG = new MessageTG();
+        savedMessageTG.setUser(user);
+        savedMessageTG.setText(message.getText());
+        savedMessageTG.setTimestamp(LocalDateTime.now());
+        messageRepository.save(savedMessageTG);
     }
 }

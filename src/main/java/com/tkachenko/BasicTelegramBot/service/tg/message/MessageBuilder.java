@@ -25,6 +25,6 @@ public class MessageBuilder {
         User user = messageUtils.userCheck(message);
         messageUtils.saveMessage(user, message);
 
-        return reactionToMessages.answerSelection(message.getText());
+        return reactionToMessages.answerSelection(user, message);
     }
 }

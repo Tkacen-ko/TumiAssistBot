@@ -23,9 +23,9 @@ public class ScheduledMessages {
     }
 
     // Ежедневное уведомление пользователю
-    @Scheduled(cron = "0 0 9 * * ?") // каждый день в 9 утра
+    @Scheduled(cron = "0 0 9 * * ?")// каждый день в 9 утра
     public void sendDailyMessage() {
         userRepository.findAll().forEach(user ->
-                mainTgBot.sendMessage(user.getId(), GOOD_MORNING));
+                mainTgBot.sendMessage(user.getChatId(), GOOD_MORNING));
     }
 }
