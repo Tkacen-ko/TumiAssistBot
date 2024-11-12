@@ -8,10 +8,14 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "user_tg")
+@Table(name = "user_telegram")
 @NoArgsConstructor
-public class User {
-    public User(Long chatId, String firstName, String lastName, String userName) {
+public class UserTelegram {
+
+    public UserTelegram(Long chatId,
+                        String firstName,
+                        String lastName,
+                        String userName) {
         this.chatId = chatId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -26,7 +30,4 @@ public class User {
     private String firstName;
     private String lastName;
     private String userName;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MessageTG> messageTGS;
 }
