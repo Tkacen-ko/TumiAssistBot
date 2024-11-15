@@ -1,5 +1,5 @@
 -- Создание основной таблицы с пользователями Telegram
-create table if not exists "public".user_telegram(
+create table if not exists user_telegram(
     id BIGSERIAL PRIMARY KEY,
     chat_id BIGINT UNIQUE NOT NULL,
     first_name VARCHAR(255),
@@ -8,31 +8,31 @@ create table if not exists "public".user_telegram(
 );
 
 -- Создание таблицы организаций
-CREATE TABLE IF NOT EXISTS "public".organization (
+CREATE TABLE IF NOT EXISTS organization (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) unique not null
 );
 
 -- Создание таблицы типов счетов
-CREATE TABLE IF NOT EXISTS "public".account_type (
+CREATE TABLE IF NOT EXISTS account_type (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) unique not null
 );
 
 -- Создание таблицы классификаций
-CREATE TABLE IF NOT EXISTS "public".classification (
+CREATE TABLE IF NOT EXISTS classification (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) unique not null
 );
 
 -- Создание таблицы стран
-CREATE TABLE IF NOT EXISTS "public".country (
+CREATE TABLE IF NOT EXISTS country (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) unique not null
 );
 
 -- Создание таблицы счетов пользователей
-CREATE TABLE IF NOT EXISTS "public".user_account (
+CREATE TABLE IF NOT EXISTS user_account (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) unique not null,
     user_id BIGINT REFERENCES "public".user_telegram(id) ON DELETE CASCADE,
@@ -44,17 +44,17 @@ CREATE TABLE IF NOT EXISTS "public".user_account (
 );
 
 -- Предзаполнение таблицы организаций
-INSERT INTO "public".organization (title) VALUES ('ТДС'), ('Тинёк'), ('Freedom'), ('Kaspi'), ('ByBit'), ('OKX')
+INSERT INTO organization (title) VALUES ('ТДС'), ('Тинёк'), ('Freedom'), ('Kaspi'), ('ByBit'), ('OKX')
 ON CONFLICT DO NOTHING;
 
 -- Предзаполнение таблицы типов счетов
-INSERT INTO "public".account_type (title) VALUES ('Наличка'), ('Счета_Банк'), ('Счёт_%'), ('Крипта'), ('ETF')
+INSERT INTO account_type (title) VALUES ('Наличка'), ('Счета_Банк'), ('Счёт_%'), ('Крипта'), ('ETF')
 ON CONFLICT DO NOTHING;
 
 -- Предзаполнение таблицы классификаций
-INSERT INTO "public".classification (title) VALUES ('Текучка'), ('Подушка'), ('Спекуляции'), ('Инвестиции')
+INSERT INTO classification (title) VALUES ('Текучка'), ('Подушка'), ('Спекуляции'), ('Инвестиции')
 ON CONFLICT DO NOTHING;
 
 -- Предзаполнение таблицы стран
-INSERT INTO "public".country (title) VALUES ('РФ'), ('США'), ('Казахстан'), ('ОАЭ'), ('Гонконг')
+INSERT INTO country (title) VALUES ('РФ'), ('США'), ('Казахстан'), ('ОАЭ'), ('Гонконг')
 ON CONFLICT DO NOTHING;

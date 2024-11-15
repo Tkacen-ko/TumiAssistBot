@@ -1,17 +1,16 @@
 package com.tkachenko.BasicTelegramBot.service.tg;
 
-
-import com.tkachenko.BasicTelegramBot.service.tg.message.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import com.tkachenko.BasicTelegramBot.dto.BasicTelegramData;
+import com.tkachenko.BasicTelegramBot.service.tg.message.MessageUtils;
+import com.tkachenko.BasicTelegramBot.service.tg.message.ReactionToMessages;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.List;
 
 @Service
 public class MainTgBot extends TelegramLongPollingBot {
@@ -20,11 +19,15 @@ public class MainTgBot extends TelegramLongPollingBot {
     @Value("${telegram.bot.token}")
     private String tokenBot;
 
-    private MessageBuilder messageBuilder;
+    private final MessageUtils messageUtils;
+    private final ReactionToMessages reactionToMessages;
 
     @Autowired
-    public MainTgBot(MessageBuilder messageBuilder) {
-        this.messageBuilder = messageBuilder;
+    public MainTgBot(MessageUtils messageUtils,
+                     ReactionToMessages reactionToMessages)
+    {
+        this.messageUtils = messageUtils;
+        this.reactionToMessages = reactionToMessages;
     }
 
     @Override
@@ -39,24 +42,54 @@ public class MainTgBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        String answerer;
+        SendMessage answererMessage = new SendMessage();
+        String chatId = getChatId(update);
 
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            try {
-                answerer =  messageBuilder.basicAnswerer(update.getMessage());
-            } catch (Exception e) {
-                answerer = ConstantTgBot.ERROR_MASSAGE;
-                e.printStackTrace();
-            }
-            sendMessage(update.getMessage().getChatId(), answerer);
+        try {
+            String textMessage = getTextMessage(update);
+            BasicTelegramData basicTelegramData = new BasicTelegramData(chatId, textMessage);
+            answererMessage.setChatId(chatId);
+            messageUtils.userCheck(update);
+
+            answererMessage = reactionToMessages.answerSelection(basicTelegramData, answererMessage);
+
+        } catch (Exception e) {
+            answererMessage = MessageUtils.createSimpleMessage(chatId, ConstantTgBot.ERROR_MASSAGE);
+            e.printStackTrace();
         }
+
+        sendMessage(answererMessage);
     }
 
-    public void sendMessage(Long chatId, String text) {
+    public void sendMessage(SendMessage answererMessage) {
         try {
-            execute(new SendMessage(chatId.toString(), text));
+            execute(answererMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getChatId(Update update) {
+        Long chatId = null;
+        if (update.hasMessage()) {
+            chatId = update.getMessage().getChatId();
+        } else if (update.hasCallbackQuery()) {
+            chatId = update.getCallbackQuery().getMessage().getChatId();
+        }
+
+        return chatId.toString();
+    }
+
+
+
+    private String getTextMessage(Update update) {
+        String textMessage = null;
+        if (update.hasMessage()) {
+            textMessage = update.getMessage().getText();
+        } else if (update.hasCallbackQuery()) {
+            textMessage = update.getCallbackQuery().getData();
+        }
+
+        return textMessage;
     }
 }
