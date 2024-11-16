@@ -1,5 +1,6 @@
 package com.tkachenko.BasicTelegramBot.model;
 
+import com.tkachenko.BasicTelegramBot.model.finance.organization.FinancialOrganization;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,4 +31,12 @@ public class UserTelegram {
     private String firstName;
     private String lastName;
     private String userName;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_organization",
+            joinColumns = @JoinColumn(name = "user_telegram_id"),
+            inverseJoinColumns = @JoinColumn(name = "financial_organization_id")
+    )
+    private List<FinancialOrganization> financialOrganizations;
 }
