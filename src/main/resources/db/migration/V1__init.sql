@@ -32,15 +32,15 @@ CREATE TABLE IF NOT EXISTS country (
 );
 
 -- Создание таблицы счетов пользователей
-CREATE TABLE IF NOT EXISTS user_account (
+CREATE TABLE IF NOT EXISTS account (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) unique not null,
-    user_id BIGINT REFERENCES "public".user_telegram(id) ON DELETE CASCADE,
-    total_money DECIMAL(15, 2) NOT NULL,
-    organization_id BIGINT REFERENCES "public".organization(id),
-    account_type_id BIGINT REFERENCES "public".account_type(id),
-    classification_id BIGINT REFERENCES "public".classification(id),
-    country_id BIGINT REFERENCES "public".country(id)
+    user_id BIGINT REFERENCES user_telegram(id) ON DELETE CASCADE,
+    total_money REAL NOT NULL,
+    organization_id BIGINT REFERENCES organization(id),
+    type_id BIGINT REFERENCES account_type(id),
+    classification_id BIGINT REFERENCES classification(id),
+    country_id BIGINT REFERENCES country(id)
 );
 
 -- Предзаполнение таблицы организаций
@@ -48,7 +48,7 @@ INSERT INTO organization (title) VALUES ('ТДС'), ('Тинёк'), ('Freedom'),
 ON CONFLICT DO NOTHING;
 
 -- Предзаполнение таблицы типов счетов
-INSERT INTO account_type (title) VALUES ('Наличка'), ('Счета_Банк'), ('Счёт_%'), ('Крипта'), ('ETF')
+INSERT INTO account_type (title) VALUES ('Наличка'), ('Счета Банк'), ('Счёт %'), ('Крипта'), ('ETF')
 ON CONFLICT DO NOTHING;
 
 -- Предзаполнение таблицы классификаций

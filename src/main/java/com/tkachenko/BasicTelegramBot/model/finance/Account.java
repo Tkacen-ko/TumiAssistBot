@@ -21,7 +21,7 @@ public class Account {
     private String title; // Название позиции
 
     @Column(name = "total_money")
-    private Double totalMoney; // Общая сумма на счете
+    private Float totalMoney; // Общая сумма на счете
 
     @ManyToOne
     @JoinColumn(name = "organization_id", nullable = false)
@@ -38,4 +38,8 @@ public class Account {
     @ManyToOne
     @JoinColumn(name = "country_id", nullable = false)
     private Country country; // Ссылка на страну
+
+    @ManyToOne
+    @JoinColumn(name = "currency_id", nullable = false)
+    private Currency currency; // Ссылка валюту
 }

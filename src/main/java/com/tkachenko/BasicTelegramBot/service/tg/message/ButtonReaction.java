@@ -23,13 +23,15 @@ public class ButtonReaction {
     private final AccountTypeRepository accountTypeRepository;
     private final ClassificationRepository classificationRepository;
     private final CountryRepository countryRepository;
+    private final CurrencyRepository currencyRepository;
 
     ButtonReaction(OrganizationRepository organizationRepository,
                    AccountBuilder accountBuilder,
                    AccountRepository accountRepository,
                    AccountTypeRepository accountTypeRepository,
                    ClassificationRepository classificationRepository,
-                   CountryRepository countryRepository)
+                   CountryRepository countryRepository,
+                   CurrencyRepository currencyRepository)
     {
         this.organizationRepository = organizationRepository;
         this.accountBuilder = accountBuilder;
@@ -37,6 +39,7 @@ public class ButtonReaction {
         this.accountTypeRepository = accountTypeRepository;
         this.classificationRepository = classificationRepository;
         this.countryRepository = countryRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     SendMessage buttonProcessing(BasicTelegramData basicTelegramData,
@@ -71,6 +74,18 @@ public class ButtonReaction {
         {
             String firstPartText = command.substring(0, command.lastIndexOf("_"));
             String secondPartText = command.substring(command.lastIndexOf("_") + 1);
+            if(firstPartText.equals("currency"))
+            {
+                Optional<Currency> organization = currencyRepository.getByTitle(secondPartText);
+                if(!organization.isEmpty())
+                {
+                    account.setCurrency(organization.get());
+                    InlineKeyboardMarkup inlineKeyboardMarkup = accountBuilder.fillingAccount(basicTelegramData, account, answererMessage);
+                    answererMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                    return answererMessage;
+                }
+            }
             if(firstPartText.equals("organization"))
             {
                 Optional<Organization> organization = organizationRepository.getByTitle(secondPartText);

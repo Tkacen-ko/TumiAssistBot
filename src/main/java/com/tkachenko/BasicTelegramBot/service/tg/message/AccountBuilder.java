@@ -19,19 +19,22 @@ public class AccountBuilder {
     private final AccountTypeRepository accountTypeRepository;
     private final ClassificationRepository classificationRepository;
     private final CountryRepository countryRepository;
+    private final CurrencyRepository currencyRepository;
 
     @Autowired
     public AccountBuilder(ButtonsBuilder buttonsBuilder,
                           OrganizationRepository organizationRepository,
                           AccountTypeRepository accountTypeRepository,
                           ClassificationRepository classificationRepository,
-                          CountryRepository countryRepository)
+                          CountryRepository countryRepository,
+                          CurrencyRepository currencyRepository)
     {
         this.buttonsBuilder = buttonsBuilder;
         this.organizationRepository = organizationRepository;
         this.accountTypeRepository = accountTypeRepository;
         this.classificationRepository = classificationRepository;
         this.countryRepository = countryRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     InlineKeyboardMarkup fillingAccount(BasicTelegramData basicTelegramData,
@@ -46,6 +49,15 @@ public class AccountBuilder {
         else if(account.getTotalMoney() == null)
         {
             answererMessage.setText("Напишите сумму которая храниться в рамках данного аккаунта");
+        }
+        else if(account.getCurrency() == null)
+        {
+            for (String organization : currencyRepository.findAllTitles())
+            {
+                buttonData.put(organization, ("@currency_" + organization));
+            }
+
+            answererMessage.setText("Выберете вылюту, либо нажнимите кпопку отмены.");
         }
         else if(account.getOrganization() == null)
         {

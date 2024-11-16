@@ -54,10 +54,10 @@ public class ReactionToMessages {
             );
             Account account = temporaryAccounts.get(basicTelegramData.getIdChat());
 
-            Boolean allFieldsNotNull = Stream.of(account.getTitle(),
+            boolean allFieldsNotNull = Stream.of(account.getTitle(),
                     account.getTotalMoney(), account.getType(),
                     account.getClassification(),account.getOrganization(),
-                    account.getCountry()).allMatch(Objects::nonNull);
+                    account.getCountry(), account.getCurrency()).allMatch(Objects::nonNull);
             if(allFieldsNotNull)
             {
                 accountRepository.save(account);
@@ -80,7 +80,7 @@ public class ReactionToMessages {
             }
             else if(temporaryAccounts.get(basicTelegramData.getIdChat()).getTotalMoney() == null)
             {
-                temporaryAccounts.get(basicTelegramData.getIdChat()).setTotalMoney(Double.parseDouble(basicTelegramData.getMassageText()));
+                temporaryAccounts.get(basicTelegramData.getIdChat()).setTotalMoney(Float.parseFloat(basicTelegramData.getMassageText()));
                 answererMessage.setText("Верно ли я понял что сумма для хранения равна: \n" +
                         basicTelegramData.getMassageText() +
                         "\nЕсли всё верно, нажмите \"Продолжить\" иннициализацию актива" +
