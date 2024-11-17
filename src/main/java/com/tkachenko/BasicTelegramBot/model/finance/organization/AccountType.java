@@ -8,5 +8,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "account_type")
 @NoArgsConstructor
 public class AccountType extends GeneralData {
-
+    public AccountType(Long id, String title) {
+        super(id, title);
+    }
 }

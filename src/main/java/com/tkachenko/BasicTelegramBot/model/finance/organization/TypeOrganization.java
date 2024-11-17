@@ -9,5 +9,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "type_organization")
 @NoArgsConstructor
 public class TypeOrganization  extends GeneralData {
-
+    public TypeOrganization(Long id, String title) {
+        super(id, title);
+    }
 }

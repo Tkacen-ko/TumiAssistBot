@@ -15,14 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class FinancialAccount extends GeneralData {
-    @ManyToMany
-    @JoinTable(
-            name = "financial_account_organization", // Таблица связи между FinancialAccount и FinancialOrganization
-            joinColumns = @JoinColumn(name = "financial_account_id"),
-            inverseJoinColumns = @JoinColumn(name = "financial_organization_id")
-    )
-    private List<FinancialOrganization> financialOrganizations;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_type_id", nullable = false)
     private AccountType accountType;
@@ -30,4 +22,12 @@ public class FinancialAccount extends GeneralData {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "currency_id", nullable = false)
     private Currency currency;
+
+    @ManyToMany
+    @JoinTable(
+            name = "financial_account_organization",
+            joinColumns = @JoinColumn(name = "financial_account_id"),
+            inverseJoinColumns = @JoinColumn(name = "financial_organization_id")
+    )
+    private List<FinancialOrganization> financialOrganizations;
 }

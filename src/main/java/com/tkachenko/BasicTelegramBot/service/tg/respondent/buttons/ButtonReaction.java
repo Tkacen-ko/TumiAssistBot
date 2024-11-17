@@ -4,154 +4,87 @@ import com.tkachenko.BasicTelegramBot.dto.tg.Intermediate;
 import com.tkachenko.BasicTelegramBot.dto.tg.messages.BasicInformationMessage;
 import com.tkachenko.BasicTelegramBot.model.finance.general.Currency;
 import com.tkachenko.BasicTelegramBot.model.finance.organization.AccountType;
-import com.tkachenko.BasicTelegramBot.model.finance.organization.Country;
-import com.tkachenko.BasicTelegramBot.model.finance.organization.FinancialOrganization;
 import com.tkachenko.BasicTelegramBot.repository.finance.general.CurrencyRepository;
 import com.tkachenko.BasicTelegramBot.repository.finance.organization.AccountTypeRepository;
-import com.tkachenko.BasicTelegramBot.repository.finance.organization.CountryRepository;
-import com.tkachenko.BasicTelegramBot.repository.finance.organization.FinancialOrganizationRepository;
-import com.tkachenko.BasicTelegramBot.service.tg.respondent.intermediateData.IntermediateAnswerBuilder;
+import com.tkachenko.BasicTelegramBot.service.tg.ConstantTgBot;
+import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.ButtonConstant;
+import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.CommandConstant;
+import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.StringConstant;
+import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.TitleButtonConstant;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class ButtonReaction {
 
-    private final FinancialOrganizationRepository organizationRepository;
-    private final IntermediateAnswerBuilder intermediateAnswerBuilder;
-    private final AccountTypeRepository accountTypeRepository;
-    private final CountryRepository countryRepository;
     private final CurrencyRepository currencyRepository;
+    private final ButtonsBuilder buttonsBuilder;
+    private final AccountTypeRepository accountTypeRepository;
 
-    ButtonReaction(FinancialOrganizationRepository organizationRepository,
-                   IntermediateAnswerBuilder accountBuilder,
-                   AccountTypeRepository accountTypeRepository,
-                   CountryRepository countryRepository,
-                   CurrencyRepository currencyRepository)
+    ButtonReaction(CurrencyRepository currencyRepository,
+                   ButtonsBuilder buttonsBuilder,
+                   AccountTypeRepository accountTypeRepository)
     {
-        this.organizationRepository = organizationRepository;
-        this.intermediateAnswerBuilder = accountBuilder;
-        this.accountTypeRepository = accountTypeRepository;
-        this.countryRepository = countryRepository;
+
         this.currencyRepository = currencyRepository;
+        this.buttonsBuilder = buttonsBuilder;
+        this.accountTypeRepository = accountTypeRepository;
     }
 
-    public SendMessage buttonProcessing(BasicInformationMessage basicInformationMessage,
+    public void buttonProcessing(BasicInformationMessage basicInformationMessage,
                                         SendMessage sendMessage,
-                                        Map<String, Intermediate> intermediateData))
+                                        Map<String, Intermediate> intermediateData)
     {
-        //DOTO OLD CODE
-//        Account account = intermediateData.get(basicInformationMessage.getIdChat());
-//
-//        boolean allFieldsNotNull = Stream.of(account.getTitle(),
-//                account.getTotalMoney(), account.getType(),
-//                account.getClassification(),account.getFinancialOrganization(),
-//                account.getCountry(), account.getCurrency()).allMatch(Objects::nonNull);
-//        if(allFieldsNotNull)
-//        {
-//            accountRepository.save(account);
-//            intermediateData.clear();
-//            String answerText = "Все данные счёта заполнены и счёт сохранён";
-//            sendMessage.setText(answerText);
-//        }
-
-
+        String chatId = basicInformationMessage.getUserTelegram().getChatId().toString();
         String answerText = "Неизвестная кнопка";
-        Account account = temporaryAccounts.get(basicTelegramData.getIdChat());
+        String textMessage = basicInformationMessage.getMessageText();
+        InlineKeyboardMarkup keyboardMarkup = null;
+        Map<String, String> buttonData = new LinkedHashMap<>();
 
-        if (command.equals("continue_creating")) {
-            answerText = "Типа продолжим тебя задолбывать";
-        }
-        else if(command.equals("cancel_creation"))
+        if(textMessage.equals(CommandConstant.CANCEL_CREATION_COMMANDS))
         {
-            temporaryAccounts.clear();
-            answerText = "Ну всё, затёр, не буду запаривать";
+            intermediateData.get(chatId).clearData();
+            answerText = TitleButtonConstant.CANCEL_CREATION_TITLE;
         }
-        else if(command.equals("cancel_creation"))
+        else if(textMessage.contains(ConstantTgBot.BASIC_SEPARATOR_FOR_COMMANDS))
         {
-            temporaryAccounts.clear();
-            answerText = "Ну всё, затёр, не буду запаривать";
-        }
-        else if(command.equals("continue_initializing_account"))
-        {
-            InlineKeyboardMarkup inlineKeyboardMarkup = intermediateAnswerBuilder.fillingAccount(basicTelegramData, account, answererMessage);
-            answererMessage.setReplyMarkup(inlineKeyboardMarkup);
+            String firstPartText = textMessage.substring(1, textMessage.lastIndexOf(ConstantTgBot.BASIC_SEPARATOR_FOR_COMMANDS));
+            String secondPartText = textMessage.substring(textMessage.lastIndexOf(ConstantTgBot.BASIC_SEPARATOR_FOR_COMMANDS) + 1);
 
-            return answererMessage;
-        }
-        else if(command.contains("_"))
-        {
-            String firstPartText = command.substring(0, command.lastIndexOf("_"));
-            String secondPartText = command.substring(command.lastIndexOf("_") + 1);
-            if(firstPartText.equals("currency"))
+            if(firstPartText.equals(StringConstant.ACCOUNT_TYPE))
             {
-                Optional<Currency> organization = currencyRepository.getByTitle(secondPartText);
-                if(!organization.isEmpty())
-                {
-                    account.setCurrency(organization.get());
-                    InlineKeyboardMarkup inlineKeyboardMarkup = intermediateAnswerBuilder.fillingAccount(basicTelegramData, account, answererMessage);
-                    answererMessage.setReplyMarkup(inlineKeyboardMarkup);
-
-                    return answererMessage;
+                Optional<AccountType> accountType = accountTypeRepository.findByTitle(secondPartText);
+                if (!accountType.isEmpty()) {
+                    intermediateData.get(chatId).getFinancialAccount().setAccountType(accountType.get());
                 }
-            }
-            if(firstPartText.equals("organization"))
-            {
-                Optional<FinancialOrganization> organization = organizationRepository.getByTitle(secondPartText);
-                if(!organization.isEmpty())
+                for (String currency : currencyRepository.findAllTitles())
                 {
-                    account.setFinancialOrganization(organization.get());
-                    InlineKeyboardMarkup inlineKeyboardMarkup = intermediateAnswerBuilder.fillingAccount(basicTelegramData, account, answererMessage);
-                    answererMessage.setReplyMarkup(inlineKeyboardMarkup);
-
-                    return answererMessage;
+                    String commandCode = StringConstant.BASIC_COMMAND_SEPARATOR +
+                            String.join(ConstantTgBot.BASIC_SEPARATOR_FOR_COMMANDS,
+                                    new String[]{ StringConstant.CURRENCY, currency });
+                    buttonData.put(currency, commandCode);
                 }
-            }
-            else if(firstPartText.equals("accountType"))
-            {
-                Optional<AccountType> accountType = accountTypeRepository.getByTitle(secondPartText);
-                if(!accountType.isEmpty())
-                {
-                    account.setType(accountType.get());
-                    InlineKeyboardMarkup inlineKeyboardMarkup = intermediateAnswerBuilder.fillingAccount(basicTelegramData, account, answererMessage);
-                    answererMessage.setReplyMarkup(inlineKeyboardMarkup);
+                buttonData.putAll(ButtonConstant.CANCEL_CREATION);
 
-                    return answererMessage;
-                }
-            }
-            else if(firstPartText.equals("classification"))
-            {
-                Optional<Classification> classification = classificationRepository.getByTitle(secondPartText);
-                if(!classification.isEmpty())
-                {
-                    account.setClassification(classification.get());
-                    InlineKeyboardMarkup inlineKeyboardMarkup = intermediateAnswerBuilder.fillingAccount(basicTelegramData, account, answererMessage);
-                    answererMessage.setReplyMarkup(inlineKeyboardMarkup);
+                keyboardMarkup = buttonsBuilder.createMessageWithButtons(buttonData);
+                sendMessage.setReplyMarkup(keyboardMarkup);
 
-                    return answererMessage;
-                }
+                return;
             }
-            else if(firstPartText.equals("country"))
+            if(firstPartText.equals(StringConstant.CURRENCY))
             {
-                Optional<Country> country = countryRepository.getByTitle(secondPartText);
-                if(!country.isEmpty())
-                {
-                    account.setCountry(country.get());
-                    InlineKeyboardMarkup inlineKeyboardMarkup = intermediateAnswerBuilder.fillingAccount(basicTelegramData, account, answererMessage);
-                    answererMessage.setReplyMarkup(inlineKeyboardMarkup);
-
-                    return answererMessage;
+                Optional<Currency> currency = currencyRepository.findByTitle(secondPartText);
+                if (!currency.isEmpty()) {
+                    intermediateData.get(chatId).getFinancialAccount().setCurrency(currency.get());
                 }
             }
         }
 
-        answererMessage.setText(answerText);
-        return answererMessage;
+        sendMessage.setText(answerText);
     }
 }

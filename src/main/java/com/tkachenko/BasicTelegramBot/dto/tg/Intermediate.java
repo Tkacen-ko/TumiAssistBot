@@ -8,4 +8,16 @@ import lombok.Data;
 public class Intermediate {
     FinancialAccount financialAccount;
     FinancialChange financialChange;
+
+    public void clearData()
+    {
+        financialAccount = null;
+        financialChange = null;
+    }
+
+    public boolean checkData()
+    {
+        return this.financialAccount != null ||
+                this.financialChange != null;
+    }
 }

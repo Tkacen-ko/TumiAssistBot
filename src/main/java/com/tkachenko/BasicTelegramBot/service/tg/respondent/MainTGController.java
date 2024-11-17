@@ -43,16 +43,18 @@ public class MainTGController {
     public SendMessage answerSelection(BasicInformationMessage basicInformationMessage,
                                        SendMessage sendMessage)
     {
-        String textMessage = basicInformationMessage.getMassageText();
+        String textMessage = basicInformationMessage.getMessageText();
+        String chatId = basicInformationMessage.getUserTelegram().getChatId().toString();
+        intermediateData.putIfAbsent(chatId, new Intermediate());
 
-        if(intermediateData.get(basicInformationMessage.getUserTelegram().getChatId()) != null)
+        if(intermediateData.get(chatId).checkData())
         {
             intermediate.checkingForIntermediateData(basicInformationMessage, sendMessage, intermediateData);
         }
 
         if(sendMessage.getText() == null && textMessage.charAt(0) == '@')
         {
-            sendMessage = buttonReaction.buttonProcessing(basicInformationMessage, sendMessage, intermediateData);
+            buttonReaction.buttonProcessing(basicInformationMessage, sendMessage, intermediateData);
         }
 
         if(sendMessage.getText() == null && textMessage.charAt(0) == '/')
@@ -62,7 +64,7 @@ public class MainTGController {
 
         if(sendMessage.getText() == null)
         {
-            sendMessage.setText(ConstantTgBot.BASIC_MASSAGE);
+            sendMessage.setText(ConstantTgBot.BASIC_MESSAGE);
         }
 
 

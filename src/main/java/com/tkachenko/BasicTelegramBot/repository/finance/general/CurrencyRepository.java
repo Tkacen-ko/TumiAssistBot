@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface CurrencyRepository extends JpaRepository<Currency, Long> {
-    Optional<Currency> getByTitle(String title);
+    Optional<Currency> findByTitle(String title);
 
     @Query("SELECT o.title FROM Currency o")
     Collection<String> findAllTitles();

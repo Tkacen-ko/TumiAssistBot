@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class BasicInformationMessage {
     UserTelegram userTelegram;
-    String massageText;
-    LimitedSizeMessageList<PreviousMessages> limitedSizeMessageList;
+    String messageText;
+    LimitedSizeMessageList<MessagesHistoryData> historyReceivedMessages;
+    LimitedSizeMessageList<MessagesHistoryData> historySentMessages;
 }

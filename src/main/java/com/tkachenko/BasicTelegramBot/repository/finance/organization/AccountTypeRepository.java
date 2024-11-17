@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface AccountTypeRepository extends JpaRepository<AccountType, Long> {
-    Optional<AccountType> getByTitle(String title);
+    Optional<AccountType> findByTitle(String title);
 
     @Query("SELECT t.title FROM AccountType t")
     Collection<String> findAllTitles();

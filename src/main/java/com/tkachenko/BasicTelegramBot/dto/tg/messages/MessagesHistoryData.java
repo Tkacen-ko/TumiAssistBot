@@ -5,7 +5,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class PreviousMessages {
-    String massageId;
-    String massageText;
+public class MessagesHistoryData {
+    String messageId;
+    String messageText;
 }

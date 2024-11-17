@@ -13,15 +13,11 @@ import java.util.Map;
 
 @Service
 public class IntermediateProcessing {
-
-    private final ButtonsBuilder buttonsBuilder;
     private final FinancialAccountFilling financialAccountFilling;
 
     @Autowired
-    IntermediateProcessing(ButtonsBuilder buttonsBuilder,
-                           FinancialAccountFilling financialAccountFilling)
+    IntermediateProcessing(FinancialAccountFilling financialAccountFilling)
     {
-        this.buttonsBuilder = buttonsBuilder;
         this.financialAccountFilling = financialAccountFilling;
     }
 
@@ -37,21 +33,21 @@ public class IntermediateProcessing {
     {
         String chatId = basicInformationMessage.getUserTelegram().getChatId().toString();
 
-        if(intermediateData.get(chatId) == null)
-        {
-            return;
-        }
-
         Intermediate intermediate = intermediateData.get(chatId);
-        FinancialAccount financialAccount =  intermediate.getFinancialAccount();
+        FinancialAccount financialAccount = intermediate.getFinancialAccount();
 
-        if(financialAccount != null)
+        if(intermediate.getFinancialAccount() != null)
         {
             financialAccountFilling.checkFillingDataFinancialAccount(   basicInformationMessage,
                                                                         sendMessage,
+                                                                        intermediateData,
                                                                         financialAccount);
 
             return;
+        }
+        if(intermediate.getFinancialChange() != null)
+        {
+            //TODO functional
         }
     }
 }

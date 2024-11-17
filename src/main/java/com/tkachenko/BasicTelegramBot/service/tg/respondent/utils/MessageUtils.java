@@ -9,6 +9,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Map;
+
 @Service
 public class MessageUtils {
 
@@ -19,15 +21,13 @@ public class MessageUtils {
         this.userRepository = userRepository;
     }
 
-    public UserTelegram userCheck(Update update) {
-        if (!update.hasMessage()) {
+    public UserTelegram userCheck(Message message) {
+        if (message == null) {
             return null;
         }
 
-        Message message = update.getMessage();
-        UserTelegram userTelegram = userRepository.findByChatIdAndUserName(message.getChatId(),
-                        message.getFrom().getUserName()).orElseGet(() -> userRepository.save(
-                        new UserTelegram(message.getChatId(),
+        UserTelegram userTelegram = userRepository.findByChatId(message.getChatId()).orElseGet(() ->
+                userRepository.save(new UserTelegram(message.getChatId(),
                                 message.getFrom().getFirstName(),
                                 message.getFrom().getLastName(),
                                 message.getFrom().getUserName())
@@ -36,17 +36,24 @@ public class MessageUtils {
         return userTelegram;
     }
 
-    public BasicInformationMessage checkBasicInformation(BasicInformationMessage basicInformationMessage,
-                                      UserTelegram userTelegram,
-                                      String textMessage)
-    {
-        if(basicInformationMessage == null)
+    public BasicInformationMessage checkBasicInformation(BasicInformationMessage basicTelegramData,
+                                                         UserTelegram userTelegram,
+                                                         String textMessage,
+                                                         Map<String, BasicInformationMessage> basicInformationMessage) {
+        if(basicTelegramData == null)
         {
-            return new BasicInformationMessage(userTelegram, textMessage, new LimitedSizeMessageList<>(10));
+            BasicInformationMessage newBasicData = new BasicInformationMessage(userTelegram,
+                    textMessage,
+                    new LimitedSizeMessageList<>(10),
+                    new LimitedSizeMessageList<>(10));
+            basicInformationMessage.put(userTelegram.getChatId().toString(), newBasicData);
+
+            return newBasicData;
         }
         else
         {
-            return basicInformationMessage;
+            basicTelegramData.setMessageText(textMessage);
+            return basicTelegramData;
         }
     }
 

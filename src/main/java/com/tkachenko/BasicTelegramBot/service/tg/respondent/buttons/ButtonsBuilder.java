@@ -18,7 +18,7 @@ public class ButtonsBuilder {
         for (Map.Entry<String, String> entry : buttonData.entrySet()) {
             InlineKeyboardButton button = new InlineKeyboardButton(entry.getKey());
             button.setCallbackData(entry.getValue());
-            rows.add(Collections.singletonList(button)); // Каждая кнопка на своей строке
+            rows.add(Collections.singletonList(button));
         }
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
