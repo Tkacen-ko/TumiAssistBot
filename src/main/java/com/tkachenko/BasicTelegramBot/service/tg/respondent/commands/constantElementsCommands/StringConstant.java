@@ -15,15 +15,12 @@ public class StringConstant {
             "Выберите из списка ниже компаний в которых у вас есть счета и отправься ниже в виде списка \"2, 4, 5,11\"\n" +
             "Строго в таком формате без других символов кроме цифр и запятых. Цифры строго в рамках списка представленного ниже.\n";
 
-    public static final String FIRST_PART_ORGANIZATION_SELECTION_COMMAND = ORGANIZATION + ConstantTgBot.BASIC_SEPARATOR_FOR_COMMANDS;
-
-    public static final String SELECT_ORGANIZATION_OPEN_ACCOUNT = "Выберете организацию в рамках которой вы хотите завести счёт";
-
     public static final String SELECT_ACCOUNT_TYPE = "Определите тип счёта из предложенных ниже вариантов:";
+
     public static final String INCORRECT_FORMAT_SELECTING_ORGANIZATION = "Неверный формат выбора организации.\n" +
             "Проверьте, соответствует ли ваше предыдущее сообщение указноому формату.";
+
     public static final String INVALID_COMPANY_NUMBER = "Число выбранной вами компании отсутствует в списке. Проверьте всё ещё раз и попробуйте отправить новый список.";
 
-    public static final String LIST_FINANCIAL_COMPANIES_ESTABLISHED = "Отлично! Список финансовых компаний установлен! " +
-            "Теперь выбере, в рамках какой из выбранных копании вы хотите открыть счёт:";
+    public static final String LIST_FINANCIAL_COMPANIES_ESTABLISHED = "Отлично! Список финансовых компаний установлен! \n";
 }

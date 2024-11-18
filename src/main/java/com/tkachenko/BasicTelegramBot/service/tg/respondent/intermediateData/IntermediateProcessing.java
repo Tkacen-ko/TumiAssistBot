@@ -34,14 +34,12 @@ public class IntermediateProcessing {
         String chatId = basicInformationMessage.getUserTelegram().getChatId().toString();
 
         Intermediate intermediate = intermediateData.get(chatId);
-        FinancialAccount financialAccount = intermediate.getFinancialAccount();
 
         if(intermediate.getFinancialAccount() != null)
         {
             financialAccountFilling.checkFillingDataFinancialAccount(   basicInformationMessage,
                                                                         sendMessage,
-                                                                        intermediateData,
-                                                                        financialAccount);
+                                                                        intermediateData);
 
             return;
         }

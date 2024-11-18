@@ -13,8 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface FinancialOrganizationRepository extends JpaRepository<FinancialOrganization, Long> {
-    @Query("SELECT fo FROM FinancialOrganization fo JOIN fo.users u WHERE u.chatId = :chatId")
-    List<FinancialOrganization> findAllByUserChatId(@Param("chatId") Long chatId);
 
     Optional<FinancialOrganization> findByTitle(String title);
+    Optional<FinancialOrganization> findById(Integer id);
 }

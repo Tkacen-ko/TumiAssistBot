@@ -8,4 +8,5 @@ import lombok.Data;
 public class MessagesHistoryData {
     String messageId;
     String messageText;
+    Boolean isButton;
 }

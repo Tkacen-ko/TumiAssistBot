@@ -15,6 +15,9 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class FinancialAccount extends GeneralData {
+    @Column(name = "balance", nullable = false)
+    private Double balance = 0.0;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_type_id", nullable = false)
     private AccountType accountType;

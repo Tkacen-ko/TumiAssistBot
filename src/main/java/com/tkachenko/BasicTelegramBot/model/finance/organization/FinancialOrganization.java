@@ -32,7 +32,5 @@ public class FinancialOrganization extends GeneralData {
         super(id, title);
         this.typeOrganization = typeOrganization;
         this.country = country;
-        this.financialAccounts = financialAccounts;
-        this.users = users;
     }
 }

@@ -2,12 +2,14 @@ package com.tkachenko.BasicTelegramBot.service.tg;
 
 import com.tkachenko.BasicTelegramBot.dto.tg.messages.MessagesHistoryData;
 import com.tkachenko.BasicTelegramBot.model.UserTelegram;
+import com.tkachenko.BasicTelegramBot.service.tg.respondent.utils.LimitedSizeMessageList;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.tkachenko.BasicTelegramBot.dto.tg.messages.BasicInformationMessage;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.utils.MessageUtils;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.MainTGController;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -58,7 +60,7 @@ public class MainTgBot extends TelegramLongPollingBot {
         try {
             BasicInformationMessage basicTelegramData = updateBasicData(update, answererMessage);
             answererMessage = reactionToMessages.answerSelection(basicTelegramData, answererMessage);
-            savHistorySentMessages(answererMessage);
+            deleteOldMessage(basicTelegramData);
         } catch (Exception e) {
             answererMessage = MessageUtils.createSimpleMessage(answererMessage.getChatId(), ConstantTgBot.ERROR_MESSAGE);
             e.printStackTrace();
@@ -69,7 +71,8 @@ public class MainTgBot extends TelegramLongPollingBot {
 
     public void sendMessage(SendMessage answererMessage) {
         try {
-            execute(answererMessage);
+            Message sentMessage = execute (answererMessage);
+            savHistorySentMessages(sentMessage, answererMessage.getReplyMarkup() != null);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -127,16 +130,41 @@ public class MainTgBot extends TelegramLongPollingBot {
         basicTelegramData = messageUtils.checkBasicInformation(basicTelegramData, userTelegram, textMessage, basicInformationMessage);
 
         String messageId = getMessageId(update).toString();
-        MessagesHistoryData previousMessages = new MessagesHistoryData(messageId ,textMessage);
+        MessagesHistoryData previousMessages = new MessagesHistoryData(messageId ,textMessage, false);
         basicTelegramData.getHistoryReceivedMessages().add(previousMessages);
         answererMessage.setChatId(chatId);
 
         return basicTelegramData;
     }
 
-    private void savHistorySentMessages(SendMessage answererMessage)
+    private void savHistorySentMessages(Message sentMessage, boolean isMessageContainsButtons)
     {
-        MessagesHistoryData messagesHistoryData = new MessagesHistoryData(answererMessage.getChatId().toString(), answererMessage.getText());
-        basicInformationMessage.get(answererMessage.getChatId()).getHistorySentMessages().add(messagesHistoryData);
+        MessagesHistoryData messagesHistoryData = new MessagesHistoryData(sentMessage.getMessageId().toString(), sentMessage.getText(), isMessageContainsButtons);
+        basicInformationMessage.get(sentMessage.getChatId().toString()).getHistorySentMessages().add(messagesHistoryData);
+    }
+
+    void deleteOldMessage(BasicInformationMessage basicTelegramData) throws TelegramApiException
+    {
+        LimitedSizeMessageList<MessagesHistoryData> sentMessages = basicTelegramData.getHistorySentMessages();
+        String chatId = basicTelegramData.getUserTelegram().getChatId().toString();
+        if (!sentMessages.isEmpty() && sentMessages.getFirst().getIsButton()) {
+            String deleteMessagesSting = sentMessages.getFirst().getMessageId();
+            execute(new DeleteMessage(chatId, Integer.parseInt(deleteMessagesSting)));
+        }
+    }
+
+    void deleteRedundantElements(LimitedSizeMessageList<MessagesHistoryData> historyMessages,
+                                 int stopIndex, String chatId) throws TelegramApiException {
+        String deleteMessagesSting = null;
+        if (historyMessages.getFirst().getIsButton()) {
+            deleteMessagesSting = historyMessages.getFirst().getMessageId();
+            historyMessages.removeFirst();
+            execute(new DeleteMessage(chatId, Integer.parseInt(deleteMessagesSting)));
+        }
+        for (int i = historyMessages.size() - 1; i > stopIndex; i--) {
+            deleteMessagesSting = historyMessages.get(i).getMessageId();
+            historyMessages.remove(i);
+            execute(new DeleteMessage(chatId, Integer.parseInt(deleteMessagesSting)));
+        }
     }
 }
