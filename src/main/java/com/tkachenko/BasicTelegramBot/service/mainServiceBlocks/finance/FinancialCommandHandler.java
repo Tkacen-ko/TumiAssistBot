@@ -51,7 +51,7 @@ public class FinancialCommandHandler {
         List<FinancialOrganization> financialOrganizations = financialOrganizationRepository.findAll();
         String textNewMessage = IntStream.range(0, financialOrganizations.size())
                 .mapToObj(i -> String.format(
-                        "%d. %s (%s), %s.",
+                        "*%d*. %s (%s), %s.",
                         i + 1, // Нумерация начинается с 1
                         financialOrganizations.get(i).getTitle(),
                         financialOrganizations.get(i).getCountry().getTitle(),

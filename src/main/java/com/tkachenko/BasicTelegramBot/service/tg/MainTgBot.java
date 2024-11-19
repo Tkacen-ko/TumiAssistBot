@@ -56,6 +56,7 @@ public class MainTgBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         SendMessage answererMessage = new SendMessage();
+        answererMessage.setParseMode("Markdown");
 
         try {
             BasicInformationMessage basicTelegramData = updateBasicData(update, answererMessage);

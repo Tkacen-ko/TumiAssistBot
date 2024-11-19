@@ -40,15 +40,14 @@ public class FinancialAccountFilling {
                                                  Map<String, Intermediate> intermediateData) {
         String chatId = basicInformationMessage.getUserTelegram().getChatId().toString();
         FinancialAccount financialAccount = intermediateData.get(chatId).getFinancialAccount();
-        FinancialAccount account = intermediateData.get(chatId).getFinancialAccount();
 
         boolean allFieldsNotNull = Stream.of(
-                account.getTitle(),
-                financialAccount.getAccountType(), account.getCurrency()
+                financialAccount.getTitle(),
+                financialAccount.getAccountType(), financialAccount.getCurrency()
         ).allMatch(Objects::nonNull);
 
         if (allFieldsNotNull) {
-            financialAccountRepository.save(account);
+            financialAccountRepository.save(financialAccount);
             intermediateData.get(chatId).clearData();
             String answerText = "Все данные счёта заполнены и счёт сохранён";
             sendMessage.setText(answerText);

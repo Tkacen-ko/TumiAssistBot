@@ -6,6 +6,7 @@ import com.tkachenko.BasicTelegramBot.model.finance.general.Currency;
 import com.tkachenko.BasicTelegramBot.model.finance.organization.AccountType;
 import com.tkachenko.BasicTelegramBot.repository.finance.general.CurrencyRepository;
 import com.tkachenko.BasicTelegramBot.repository.finance.organization.AccountTypeRepository;
+import com.tkachenko.BasicTelegramBot.service.mainServiceBlocks.finance.FinancialCommandHandler;
 import com.tkachenko.BasicTelegramBot.service.tg.ConstantTgBot;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.ButtonConstant;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.CommandConstant;
@@ -25,15 +26,18 @@ public class ButtonReaction {
     private final CurrencyRepository currencyRepository;
     private final ButtonsBuilder buttonsBuilder;
     private final AccountTypeRepository accountTypeRepository;
+    private final FinancialCommandHandler financialCommandHandler;
 
     ButtonReaction(CurrencyRepository currencyRepository,
                    ButtonsBuilder buttonsBuilder,
-                   AccountTypeRepository accountTypeRepository)
+                   AccountTypeRepository accountTypeRepository,
+                   FinancialCommandHandler financialCommandHandler)
     {
 
         this.currencyRepository = currencyRepository;
         this.buttonsBuilder = buttonsBuilder;
         this.accountTypeRepository = accountTypeRepository;
+        this.financialCommandHandler = financialCommandHandler;
     }
 
     public void buttonProcessing(BasicInformationMessage basicInformationMessage,
@@ -50,6 +54,12 @@ public class ButtonReaction {
         {
             intermediateData.get(chatId).clearData();
             answerText = TitleButtonConstant.CANCEL_CREATION_TITLE;
+            return;
+        }
+        else if (textMessage.equals(ButtonConstant.ADD_FINANCIAL_ACCOUNT_COMMANDS)) {
+            financialCommandHandler.getListFinancialOrganizationsAvailableNewAccount(sendMessage);
+
+            return;
         }
         else if(textMessage.contains(ConstantTgBot.BASIC_SEPARATOR_FOR_COMMANDS))
         {

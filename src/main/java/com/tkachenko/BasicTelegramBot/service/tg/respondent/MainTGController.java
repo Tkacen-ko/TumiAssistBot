@@ -51,30 +51,28 @@ public class MainTGController {
         String textMessage = basicInformationMessage.getMessageText();
         String chatId = basicInformationMessage.getUserTelegram().getChatId().toString();
         intermediateData.putIfAbsent(chatId, new Intermediate());
+        char firstSymbolTextMessage = textMessage.charAt(0);
 
-        if(sendMessage.getText() == null && textMessage.charAt(0) == '/')
+        if(firstSymbolTextMessage == '/')
         {
             commandReaction.commandProcessing(basicInformationMessage, sendMessage, intermediateData);
         }
-
-        if(sendMessage.getText() == null && textMessage.charAt(0) == '@')
+        else if(firstSymbolTextMessage == '@')
         {
             buttonReaction.buttonProcessing(basicInformationMessage, sendMessage, intermediateData);
         }
-
-        if(intermediateData.get(chatId).checkData())
+        else if(firstSymbolTextMessage == '-' || firstSymbolTextMessage == '+')
+        {
+            //TODO logic adding new consumption
+        }
+        else if(intermediateData.get(chatId).checkData())
         {
             intermediate.checkingForIntermediateData(basicInformationMessage, sendMessage, intermediateData);
         }
 
-        if(sendMessage.getText() == null && textMessage.charAt(0) == '-' || textMessage.charAt(0) == '+')
-        {
-            //TODO logic adding new consumption
-        }
-
         if(sendMessage.getText() == null)
         {
-            checkAgainstPreviouslySentMessages(basicInformationMessage, sendMessage, intermediateData);
+            sendMessage.setText(ConstantTgBot.BASIC_MESSAGE);
         }
 
         return sendMessage;
@@ -87,7 +85,7 @@ public class MainTGController {
         if(!basicInformationMessage.getHistorySentMessages().isEmpty())
         {
             String textPreviousSentMessage = basicInformationMessage.getHistorySentMessages().getFirst().getMessageText();
-            if(textPreviousSentMessage.contains(StringConstant.INTRODUCTORY_TEXT_SELECTION_COMPANIES))
+            if(textPreviousSentMessage.contains(StringConstant.INTRODUCTORY_TEXT_SELECTION_COMPANIES.replaceAll("[*_`~]", "")));
             {
                 financialCommandHandler.saveNewUserAccount(sendMessage, basicInformationMessage, intermediateData);
             }

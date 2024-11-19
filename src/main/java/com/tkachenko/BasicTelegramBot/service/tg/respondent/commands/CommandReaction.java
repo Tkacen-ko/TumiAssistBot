@@ -5,6 +5,7 @@ import com.tkachenko.BasicTelegramBot.dto.tg.messages.BasicInformationMessage;
 import com.tkachenko.BasicTelegramBot.model.finance.financialAccount.FinancialAccount;
 import com.tkachenko.BasicTelegramBot.repository.finance.organization.FinancialOrganizationRepository;
 import com.tkachenko.BasicTelegramBot.service.mainServiceBlocks.finance.FinancialCommandHandler;
+import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.ButtonConstant;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.CommandConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,6 @@ public class CommandReaction {
                                          SendMessage sendMessage,
                                          Map<String, Intermediate> intermediateData)
     {
-        String messageText = basicInformationMessage.getMessageText();
-
-        if (messageText.equals(CommandConstant.ADD_FINANCIAL_ACCOUNT_COMMANDS)) {
-            financialCommandHandler.getListFinancialOrganizationsAvailableNewAccount(sendMessage);
-
-            return sendMessage;
-        }
-
         return sendMessage;
     }
 }
