@@ -116,7 +116,7 @@ public class MainTgBot extends TelegramLongPollingBot {
         } else if (update.hasCallbackQuery()) {
             return update.getCallbackQuery().getMessage();
         }
-        // Если ни сообщения, ни реакции на кнопку нет
+
         return null;
     }
 
@@ -150,21 +150,6 @@ public class MainTgBot extends TelegramLongPollingBot {
         String chatId = basicTelegramData.getUserTelegram().getChatId().toString();
         if (!sentMessages.isEmpty() && sentMessages.getFirst().getIsButton()) {
             String deleteMessagesSting = sentMessages.getFirst().getMessageId();
-            execute(new DeleteMessage(chatId, Integer.parseInt(deleteMessagesSting)));
-        }
-    }
-
-    void deleteRedundantElements(LimitedSizeMessageList<MessagesHistoryData> historyMessages,
-                                 int stopIndex, String chatId) throws TelegramApiException {
-        String deleteMessagesSting = null;
-        if (historyMessages.getFirst().getIsButton()) {
-            deleteMessagesSting = historyMessages.getFirst().getMessageId();
-            historyMessages.removeFirst();
-            execute(new DeleteMessage(chatId, Integer.parseInt(deleteMessagesSting)));
-        }
-        for (int i = historyMessages.size() - 1; i > stopIndex; i--) {
-            deleteMessagesSting = historyMessages.get(i).getMessageId();
-            historyMessages.remove(i);
             execute(new DeleteMessage(chatId, Integer.parseInt(deleteMessagesSting)));
         }
     }

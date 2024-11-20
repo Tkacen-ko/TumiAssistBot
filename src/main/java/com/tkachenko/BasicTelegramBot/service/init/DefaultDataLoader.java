@@ -1,10 +1,12 @@
 package com.tkachenko.BasicTelegramBot.service.init;
 
+import com.tkachenko.BasicTelegramBot.model.finance.expenses.ExpenseType;
 import com.tkachenko.BasicTelegramBot.model.finance.general.Currency;
 import com.tkachenko.BasicTelegramBot.model.finance.organization.AccountType;
 import com.tkachenko.BasicTelegramBot.model.finance.organization.Country;
 import com.tkachenko.BasicTelegramBot.model.finance.organization.FinancialOrganization;
 import com.tkachenko.BasicTelegramBot.model.finance.organization.TypeOrganization;
+import com.tkachenko.BasicTelegramBot.repository.finance.expenses.ExpenseTypeRepository;
 import com.tkachenko.BasicTelegramBot.repository.finance.general.CurrencyRepository;
 import com.tkachenko.BasicTelegramBot.repository.finance.organization.AccountTypeRepository;
 import com.tkachenko.BasicTelegramBot.repository.finance.organization.CountryRepository;
@@ -25,6 +27,7 @@ public class DefaultDataLoader {
     private final TypeOrganizationRepository typeOrganizationRepository;
     private final AccountTypeRepository accountTypeRepository;
     private final FinancialOrganizationRepository financialOrganizationRepository;
+    private final ExpenseTypeRepository expenseTypeRepository;
 
     @PostConstruct
     public void loadDefaultData() {
@@ -33,6 +36,7 @@ public class DefaultDataLoader {
         loadTypeOrganizations();
         loadAccountTypes();
         loadFinancialOrganizations();
+        loadExpenseTypes();
     }
 
     private void loadCurrencies() {
@@ -40,7 +44,8 @@ public class DefaultDataLoader {
             List<Currency> currencies = List.of(
                     new Currency(null, "USD"),
                     new Currency(null, "EUR"),
-                    new Currency(null, "RUB")
+                    new Currency(null, "RUB"),
+                    new Currency(null, "KZT")
             );
             currencyRepository.saveAll(currencies);
         }
@@ -49,9 +54,14 @@ public class DefaultDataLoader {
     private void loadCountries() {
         if (countryRepository.count() == 0) {
             List<Country> countries = List.of(
+                    new Country(null, "Russia"),
                     new Country(null, "USA"),
-                    new Country(null, "Germany"),
-                    new Country(null, "Russia")
+                    new Country(null, "Kazakhstan"),
+                    new Country(null, "Georgia"),
+                    new Country(null, "China"),
+                    new Country(null, "Cyprus"),
+                    new Country(null, "Germany")
+
             );
             countryRepository.saveAll(countries);
         }
@@ -82,11 +92,46 @@ public class DefaultDataLoader {
     private void loadFinancialOrganizations() {
         if (financialOrganizationRepository.count() == 0) {
             List<FinancialOrganization> organizations = List.of(
-                    new FinancialOrganization(null, "Bank of America", new TypeOrganization(1L, null), new Country(1L, null)),
-                    new FinancialOrganization(null, "Binance", new TypeOrganization(2L, null), new Country(2L, null)),
-                    new FinancialOrganization(null, "Charles Schwab", new TypeOrganization(3L, null), new Country(1L, null))
+                    // Банки России
+                    new FinancialOrganization(null, "Тинькофф", new TypeOrganization(1L, null), new Country(1L, null), "Tin"),
+                    new FinancialOrganization(null, "Сбербанк", new TypeOrganization(1L, null), new Country(1L, null), "Sber"),
+                    new FinancialOrganization(null, "Альфа-Банк", new TypeOrganization(1L, null), new Country(1L, null), "Alpha"),
+                    new FinancialOrganization(null, "ВТБ", new TypeOrganization(1L, null), new Country(1L, null), "VTB"),
+                    new FinancialOrganization(null, "Газпромбанк", new TypeOrganization(1L, null), new Country(1L, null), "Gaz"),
+                    new FinancialOrganization(null, "Росбанк", new TypeOrganization(1L, null), new Country(1L, null), "Ros"),
+                    new FinancialOrganization(null, "Открытие", new TypeOrganization(1L, null), new Country(1L, null), "Otk"),
+
+                    // Казахстан
+                    new FinancialOrganization(null, "Freedom Finance", new TypeOrganization(3L, null), new Country(3L, null), "Free"),
+                    new FinancialOrganization(null, "Kaspi", new TypeOrganization(1L, null), new Country(3L, null), "Kaspi"),
+
+                    // Криптобиржи
+                    new FinancialOrganization(null, "Binance", new TypeOrganization(2L, null), new Country(5L, null), "Bi"),
+                    new FinancialOrganization(null, "OKX", new TypeOrganization(2L, null), new Country(5L, null), "OKX"),
+                    new FinancialOrganization(null, "ByBit", new TypeOrganization(2L, null), new Country(5L, null), "ByB"),
+
+                    // Брокеры
+                    new FinancialOrganization(null, "J2T", new TypeOrganization(3L, null), new Country(4L, null), "J2T"),
+                    new FinancialOrganization(null, "Interactive Brokers", new TypeOrganization(3L, null), new Country(7L, null), "IBKR"),
+                    new FinancialOrganization(null, "Charles Schwab", new TypeOrganization(3L, null), new Country(2L, null), "CS")
             );
             financialOrganizationRepository.saveAll(organizations);
         }
     }
+
+    private void loadExpenseTypes() {
+        if (expenseTypeRepository.count() == 0) {
+            List<ExpenseType> expenseTypes = List.of(
+                    new ExpenseType(null, "Продукты питания", "П"),
+                    new ExpenseType(null, "Развлечения", "Р"),
+                    new ExpenseType(null, "Одежда", "О"),
+                    new ExpenseType(null, "Коммунальные платежи", "Ком"),
+                    new ExpenseType(null, "Транспорт", "Тр"),
+                    new ExpenseType(null, "Медицина", "М"),
+                    new ExpenseType(null, "Прочее", "П")
+            );
+            expenseTypeRepository.saveAll(expenseTypes);
+        }
+    }
+
 }

@@ -2,9 +2,7 @@ package com.tkachenko.BasicTelegramBot.service.tg.respondent.intermediateData;
 
 import com.tkachenko.BasicTelegramBot.dto.tg.messages.BasicInformationMessage;
 import com.tkachenko.BasicTelegramBot.dto.tg.Intermediate;
-import com.tkachenko.BasicTelegramBot.model.finance.financialAccount.FinancialAccount;
-import com.tkachenko.BasicTelegramBot.service.tg.respondent.builder.FinancialAccountFilling;
-import com.tkachenko.BasicTelegramBot.service.tg.respondent.buttons.ButtonsBuilder;
+import com.tkachenko.BasicTelegramBot.service.mainServiceBlocks.finance.addAccount.FillingFinancialAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -13,10 +11,10 @@ import java.util.Map;
 
 @Service
 public class IntermediateProcessing {
-    private final FinancialAccountFilling financialAccountFilling;
+    private final FillingFinancialAccount financialAccountFilling;
 
     @Autowired
-    IntermediateProcessing(FinancialAccountFilling financialAccountFilling)
+    IntermediateProcessing(FillingFinancialAccount financialAccountFilling)
     {
         this.financialAccountFilling = financialAccountFilling;
     }

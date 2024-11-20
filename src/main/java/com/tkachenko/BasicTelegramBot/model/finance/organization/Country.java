@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "country")
 @NoArgsConstructor
 public class Country extends GeneralData {
-    public Country(Long id, String title) {
+    public Country(Long id,String title) {
         super(id, title);
     }
 }

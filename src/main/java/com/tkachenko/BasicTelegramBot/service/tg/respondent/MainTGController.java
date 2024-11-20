@@ -1,15 +1,13 @@
 package com.tkachenko.BasicTelegramBot.service.tg.respondent;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 import com.tkachenko.BasicTelegramBot.dto.tg.Intermediate;
-import com.tkachenko.BasicTelegramBot.service.mainServiceBlocks.finance.FinancialCommandHandler;
+import com.tkachenko.BasicTelegramBot.service.mainServiceBlocks.finance.accountChange.FillingAccountChange;
 import com.tkachenko.BasicTelegramBot.service.tg.ConstantTgBot;
 import com.tkachenko.BasicTelegramBot.dto.tg.messages.BasicInformationMessage;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.buttons.ButtonReaction;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.CommandReaction;
-import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.StringConstant;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.intermediateData.IntermediateProcessing;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +16,25 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 @Service
 public class MainTGController {
     /**
-     * Основаня переменнная для промежуточного хранения данных между запросами из бота
+     * Сохраняет данных между запросами из бота
      */
     private final Map<String, Intermediate> intermediateData = new HashMap<>();
 
     private final CommandReaction commandReaction;
     private final ButtonReaction buttonReaction;
     private final IntermediateProcessing intermediate;
-    private final FinancialCommandHandler financialCommandHandler;
+    private final FillingAccountChange fillingAccountChange;
 
     @Autowired
     public MainTGController(CommandReaction commandReaction,
                             ButtonReaction buttonReaction,
                             IntermediateProcessing intermediate,
-                            FinancialCommandHandler financialCommandHandler)
+                            FillingAccountChange fillingAccountChange)
     {
         this.commandReaction = commandReaction;
         this.buttonReaction = buttonReaction;
         this.intermediate = intermediate;
-        this.financialCommandHandler = financialCommandHandler;
+        this.fillingAccountChange = fillingAccountChange;
     }
 
     /**
@@ -61,9 +59,9 @@ public class MainTGController {
         {
             buttonReaction.buttonProcessing(basicInformationMessage, sendMessage, intermediateData);
         }
-        else if(firstSymbolTextMessage == '-' || firstSymbolTextMessage == '+')
+        else if(firstSymbolTextMessage == '+' || firstSymbolTextMessage == '-')
         {
-            //TODO logic adding new consumption
+            fillingAccountChange.balanceChange(basicInformationMessage, sendMessage, intermediateData);
         }
         else if(intermediateData.get(chatId).checkData())
         {
@@ -76,29 +74,5 @@ public class MainTGController {
         }
 
         return sendMessage;
-    }
-
-    void checkAgainstPreviouslySentMessages(BasicInformationMessage basicInformationMessage,
-                                            SendMessage sendMessage,
-                                            Map<String, Intermediate> intermediateData)
-    {
-        if(!basicInformationMessage.getHistorySentMessages().isEmpty())
-        {
-            String textPreviousSentMessage = basicInformationMessage.getHistorySentMessages().getFirst().getMessageText();
-            if(textPreviousSentMessage.contains(StringConstant.INTRODUCTORY_TEXT_SELECTION_COMPANIES.replaceAll("[*_`~]", "")));
-            {
-                financialCommandHandler.saveNewUserAccount(sendMessage, basicInformationMessage, intermediateData);
-            }
-            if(textPreviousSentMessage.contains(StringConstant.INCORRECT_FORMAT_SELECTING_ORGANIZATION))
-            {
-                sendMessage.setText(StringConstant.INCORRECT_FORMAT_SELECTING_ORGANIZATION);
-                financialCommandHandler.getListFinancialOrganizationsAvailableNewAccount(sendMessage);
-            }
-
-        }
-        if(sendMessage.getText() == null)
-        {
-            sendMessage.setText(ConstantTgBot.BASIC_MESSAGE);
-        }
     }
 }

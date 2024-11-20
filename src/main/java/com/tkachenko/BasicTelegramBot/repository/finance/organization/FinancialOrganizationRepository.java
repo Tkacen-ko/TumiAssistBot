@@ -16,4 +16,5 @@ public interface FinancialOrganizationRepository extends JpaRepository<Financial
 
     Optional<FinancialOrganization> findByTitle(String title);
     Optional<FinancialOrganization> findById(Integer id);
+    Optional<FinancialOrganization> findByShortName(String shortName);
 }

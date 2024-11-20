@@ -14,6 +14,12 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class FinancialOrganization extends GeneralData {
+    public FinancialOrganization(Long id, String title, TypeOrganization typeOrganization, Country country, String shortName) {
+        super(id, title);
+        this.typeOrganization = typeOrganization;
+        this.country = country;
+        this.shortName = shortName;
+    }
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_organization_id", nullable = false)
     private TypeOrganization typeOrganization;
@@ -22,15 +28,9 @@ public class FinancialOrganization extends GeneralData {
     @JoinColumn(name = "country_id", nullable = false)
     private Country country;
 
+    @Column(name = "short_name", nullable = false, length = 50)
+    private String shortName;
+
     @ManyToMany(mappedBy = "financialOrganizations")
     private List<FinancialAccount> financialAccounts;
-
-    @ManyToMany(mappedBy = "financialOrganizations")
-    private List<UserTelegram> users;
-
-    public FinancialOrganization(Long id, String title, TypeOrganization typeOrganization, Country country) {
-        super(id, title);
-        this.typeOrganization = typeOrganization;
-        this.country = country;
-    }
 }

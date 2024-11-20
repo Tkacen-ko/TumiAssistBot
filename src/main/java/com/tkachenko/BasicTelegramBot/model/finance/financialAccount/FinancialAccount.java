@@ -1,6 +1,7 @@
 package com.tkachenko.BasicTelegramBot.model.finance.financialAccount;
 
 import com.tkachenko.BasicTelegramBot.model.GeneralData;
+import com.tkachenko.BasicTelegramBot.model.UserTelegram;
 import com.tkachenko.BasicTelegramBot.model.finance.general.Currency;
 import com.tkachenko.BasicTelegramBot.model.finance.organization.AccountType;
 import com.tkachenko.BasicTelegramBot.model.finance.organization.FinancialOrganization;
@@ -14,7 +15,15 @@ import java.util.List;
 @Table(name = "financial_account")
 @NoArgsConstructor
 @Data
-public class FinancialAccount extends GeneralData {
+public class FinancialAccount {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "financial_organization_id", nullable = false)
+    private FinancialOrganization financialOrganization;
+
     @Column(name = "balance", nullable = false)
     private Double balance = 0.0;
 
@@ -33,4 +42,7 @@ public class FinancialAccount extends GeneralData {
             inverseJoinColumns = @JoinColumn(name = "financial_organization_id")
     )
     private List<FinancialOrganization> financialOrganizations;
+
+    @ManyToMany(mappedBy = "financialAccounts")
+    private List<UserTelegram> users;
 }
