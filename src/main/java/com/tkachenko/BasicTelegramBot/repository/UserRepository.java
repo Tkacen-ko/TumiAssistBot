@@ -23,6 +23,7 @@ public interface UserRepository extends JpaRepository<UserTelegram, Long> {
 
     @Query("SELECT fa FROM UserTelegram ut " +
             "JOIN ut.financialAccounts fa " +
+            "JOIN fa.currency cu " +
             "JOIN fa.financialOrganization fo " +
             "WHERE ut.id = :userId AND fo.title = :organizationTitle")
     Optional<FinancialAccount> findFinancialAccountByUserAndOrganizationTitle(@Param("userId") Long userId,

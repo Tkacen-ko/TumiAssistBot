@@ -2,6 +2,7 @@ package com.tkachenko.BasicTelegramBot.service.mainServiceBlocks.finance.account
 
 public class ConstantAccountChange {
     public final static String FINANCIAL_ACCOUNT = "financialAccount";
+    public final static String EXPENSE_TYPE = "expenseType";
     public final static String ERROR_CHANGING_ACCOUNT_BALANCE = """
 *Ошибка изменения баланса счета*:
 
@@ -27,5 +28,5 @@ public class ConstantAccountChange {
 """;
 
     public final static String SELECT_ACCOUNT = "Выберете из списка ниже, счёт, баланс которого вы бы хотели изменить:\n";
-    public final static String EXPENSE_TYPE = "Выберете из списка ниже, тип расхода:\n";
+    public final static String SELECT_EXPENSE_TYPE = "Выберете из списка ниже, тип расхода:\n";
 }

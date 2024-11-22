@@ -6,6 +6,7 @@ import com.tkachenko.BasicTelegramBot.model.UserTelegram;
 import com.tkachenko.BasicTelegramBot.model.finance.expenses.ExpenseType;
 import com.tkachenko.BasicTelegramBot.model.finance.expenses.FinancialChange;
 import com.tkachenko.BasicTelegramBot.model.finance.financialAccount.FinancialAccount;
+import com.tkachenko.BasicTelegramBot.model.finance.general.Currency;
 import com.tkachenko.BasicTelegramBot.repository.UserRepository;
 import com.tkachenko.BasicTelegramBot.repository.finance.expenses.ExpenseTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +49,9 @@ public class FillingFinancialChangeObject {
         }
         else
         {
-            balanceChangeDataSize = balanceChangeData.length;
             balanceChangeData = textMessage.split(" ");
+
+            balanceChangeDataSize = balanceChangeData.length;
             if(balanceChangeDataSize > 3)
             {
                 sendMessage.setText(ConstantAccountChange.ERROR_CHANGING_ACCOUNT_BALANCE);
@@ -63,6 +65,9 @@ public class FillingFinancialChangeObject {
         }
         intermediateData.get(chatId).setFinancialChange(new FinancialChange());
         intermediateData.get(chatId).getFinancialChange().setAmount(financialChange.getAmount());
+
+        Optional<UserTelegram> user = userRepository.findByChatId(Long.parseLong(chatId));
+        intermediateData.get(chatId.toString()).getFinancialChange().setUser(user.get());
 
         String shortNameCompany = null;
         String typeExpenses = null;

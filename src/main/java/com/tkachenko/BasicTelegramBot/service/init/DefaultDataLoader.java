@@ -128,7 +128,7 @@ public class DefaultDataLoader {
                     new ExpenseType(null, "Коммунальные платежи", "Ком"),
                     new ExpenseType(null, "Транспорт", "Тр"),
                     new ExpenseType(null, "Медицина", "М"),
-                    new ExpenseType(null, "Прочее", "П")
+                    new ExpenseType(null, "Прочее", "Пр")
             );
             expenseTypeRepository.saveAll(expenseTypes);
         }

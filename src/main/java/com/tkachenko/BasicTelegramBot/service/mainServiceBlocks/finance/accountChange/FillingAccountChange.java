@@ -14,6 +14,7 @@ import com.tkachenko.BasicTelegramBot.service.tg.ConstantTgBot;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.buttons.ButtonsBuilder;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.ButtonConstant;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.StringConstant;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -82,9 +83,12 @@ public class FillingAccountChange {
 
         if(financialChange.getExpenseType() == null)
         {
-            sendMessage.setText(ConstantAccountChange.EXPENSE_TYPE);
+            sendMessage.setText(ConstantAccountChange.SELECT_EXPENSE_TYPE);
             addButtonExpenseType(sendMessage);
+            return;
         }
+
+        checkFillingFinancialChange(basicInformationMessage, sendMessage, intermediateData);
     }
 
     void addButtonFinancialAccountUser(BasicInformationMessage basicInformationMessage,
@@ -142,10 +146,11 @@ public class FillingAccountChange {
 
         if (allFieldsNotNull) {
             financialChange.setCreatedAt(LocalDateTime.now());
-            financialChange.setAmount(financialChange.getAmount() + financialChange.getFinancialAccount().getBalance());
+            FinancialAccount financialAccount = changeAndSaveAccountBalance(financialChange);
+            financialChange.setCurrency(financialAccount.getCurrency());
             financialChangeRepository.save(financialChange);
-            financialAccountRepository.save(financialChange.getFinancialAccount());
-            String answerText = getFinalTextMessageFinancialChange(intermediateData.get(chatId).getFinancialChange());
+
+            String answerText = getFinalTextMessageFinancialChange(intermediateData.get(chatId).getFinancialChange(), financialAccount);
             sendMessage.setText(answerText);
             intermediateData.get(chatId).clearData();
         }
@@ -156,11 +161,23 @@ public class FillingAccountChange {
         return organizationTitle + " (" + organizationShortName +")";
     }
 
-    String getFinalTextMessageFinancialChange(FinancialChange financialChange)
+    String getFinalTextMessageFinancialChange(FinancialChange financialChange, FinancialAccount financialAccount)
     {
-        return "Расход на сумму " + financialChange.getAmount() +" " + financialChange.getFinancialAccount().getCurrency().getTitle() +
-                "сохранён!\n" + "Текущий баланс счёта " + financialChange.getFinancialAccount().getFinancialOrganization().getTitle()
-                + "" + financialChange.getFinancialAccount().getBalance() +
-                " " + financialChange.getFinancialAccount().getCurrency().getTitle();
+        return "Расход на сумму *" + financialChange.getAmount() +"* " + financialAccount.getCurrency().getTitle() +
+                " сохранён!\n" + "Текущий баланс счёта " + financialAccount.getFinancialOrganization().getTitle()
+                + ":\n*" + financialAccount.getBalance() +
+                " " + financialAccount.getCurrency().getTitle()+ "*";
+    }
+
+    FinancialAccount changeAndSaveAccountBalance(FinancialChange financialChange)
+    {
+        Optional<FinancialAccount> financialAccount =
+                financialAccountRepository.findByIdWithCurrencyAndOrganization(financialChange.getFinancialAccount().getId());
+        if(!financialAccount.isEmpty())
+        {
+            financialAccount.get().setBalance(financialAccount.get().getBalance() + financialChange.getAmount());
+            financialAccountRepository.save(financialAccount.get());
+        }
+        return financialAccount.get();
     }
 }
