@@ -25,13 +25,13 @@ public class MessageUtils {
         if (message == null) {
             return null;
         }
+        Long chatId = message.getChatId();
+        String firstName = message.getFrom().getFirstName();
+        String lastName = message.getFrom().getLastName();
+        String userName = message.getFrom().getUserName();
 
-        UserTelegram userTelegram = userRepository.findByChatId(message.getChatId()).orElseGet(() ->
-                userRepository.save(new UserTelegram(message.getChatId(),
-                                message.getFrom().getFirstName(),
-                                message.getFrom().getLastName(),
-                                message.getFrom().getUserName())
-                ));
+        UserTelegram userTelegram = userRepository.findByChatId(chatId).orElseGet(() ->
+                userRepository.save(new UserTelegram(chatId, firstName, lastName, userName)));
 
         return userTelegram;
     }

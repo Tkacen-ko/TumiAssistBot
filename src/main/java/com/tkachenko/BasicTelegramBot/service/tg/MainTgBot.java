@@ -63,7 +63,7 @@ public class MainTgBot extends TelegramLongPollingBot {
             answererMessage = reactionToMessages.answerSelection(basicTelegramData, answererMessage);
             deleteOldMessage(basicTelegramData);
         } catch (Exception e) {
-            answererMessage = MessageUtils.createSimpleMessage(answererMessage.getChatId(), ConstantTgBot.ERROR_MESSAGE);
+            answererMessage = MessageUtils.createSimpleMessage(getChatId(update), ConstantTgBot.ERROR_MESSAGE);
             e.printStackTrace();
         }
 

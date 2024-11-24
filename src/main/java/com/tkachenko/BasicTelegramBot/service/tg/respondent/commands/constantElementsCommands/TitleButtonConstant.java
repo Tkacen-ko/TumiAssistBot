@@ -27,4 +27,10 @@ public class TitleButtonConstant {
     public static final String MONTH = "Месяц";
     public static final String YEAR = "Год";
     public static final String AI_ANALYSIS_FINANCE = "Полный AI анализ";
+
+    public static final String SAVE_AS_THOUGHT = "Сохранить как мысль";
+    public static final String QUESTION_TO_AI = "Вопрос к AI";
+    public static final String INFO = "Инфо";
+
+    public static final String SAVE_THOUGHT_DEFAULT = "Сохранить мысль";
 }

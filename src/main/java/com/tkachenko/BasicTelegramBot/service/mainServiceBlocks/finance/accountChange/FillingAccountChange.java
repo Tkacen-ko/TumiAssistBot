@@ -62,11 +62,21 @@ public class FillingAccountChange {
                               SendMessage sendMessage,
                               Map<String, Intermediate> intermediateData)
     {
-        FinancialChange financialChange =
-                fillingFinancialChangeObject.fillingFinancialChange(basicInformationMessage,
-                        sendMessage,
-                        intermediateData
-                );
+        String chatId = basicInformationMessage.getUserTelegram().getChatId().toString();
+        FinancialChange financialChange = intermediateData.get(chatId).getFinancialChange();
+        String textAnswer = "";
+
+        if(financialChange == null) {
+            financialChange =
+                    fillingFinancialChangeObject.fillingFinancialChange(basicInformationMessage,
+                            sendMessage,
+                            intermediateData
+                    );
+        }
+        else
+        {
+            textAnswer = StringConstant.NOT_FINISHED_FILLING_FINANCIAL_ORGANIZATION_SETTINGS;
+        }
 
         if(sendMessage.getText() != null)
         {
@@ -75,16 +85,19 @@ public class FillingAccountChange {
 
         if(financialChange.getFinancialAccount() == null)
         {
-            sendMessage.setText(ConstantAccountChange.SELECT_ACCOUNT);
+            textAnswer += ConstantAccountChange.SELECT_ACCOUNT;
             addButtonFinancialAccountUser(basicInformationMessage, sendMessage);
+            sendMessage.setText(textAnswer);
 
             return;
         }
 
         if(financialChange.getExpenseType() == null)
         {
-            sendMessage.setText(ConstantAccountChange.SELECT_EXPENSE_TYPE);
+            textAnswer += ConstantAccountChange.SELECT_EXPENSE_TYPE;
             addButtonExpenseType(sendMessage);
+            sendMessage.setText(textAnswer);
+
             return;
         }
 

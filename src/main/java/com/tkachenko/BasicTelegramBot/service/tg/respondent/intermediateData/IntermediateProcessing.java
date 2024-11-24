@@ -2,22 +2,21 @@ package com.tkachenko.BasicTelegramBot.service.tg.respondent.intermediateData;
 
 import com.tkachenko.BasicTelegramBot.dto.tg.messages.BasicInformationMessage;
 import com.tkachenko.BasicTelegramBot.dto.tg.Intermediate;
+import com.tkachenko.BasicTelegramBot.service.mainServiceBlocks.finance.accountChange.FillingAccountChange;
 import com.tkachenko.BasicTelegramBot.service.mainServiceBlocks.finance.addAccount.FillingFinancialAccount;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.tkachenko.BasicTelegramBot.service.mainServiceBlocks.psychologicalHealth.FillingThoughtUser;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.util.Map;
 
 @Service
+@AllArgsConstructor
 public class IntermediateProcessing {
     private final FillingFinancialAccount financialAccountFilling;
-
-    @Autowired
-    IntermediateProcessing(FillingFinancialAccount financialAccountFilling)
-    {
-        this.financialAccountFilling = financialAccountFilling;
-    }
+    private final FillingAccountChange fillingAccountChange;
+    private final FillingThoughtUser fillingThoughtUser;
 
     /**
      * Метод ответа когда есть промежуточные данные от пользователя
@@ -33,17 +32,32 @@ public class IntermediateProcessing {
 
         Intermediate intermediate = intermediateData.get(chatId);
 
-        if(intermediate.getFinancialAccount() != null)
-        {
-            financialAccountFilling.checkFillingDataFinancialAccount(   basicInformationMessage,
-                                                                        sendMessage,
-                                                                        intermediateData);
+        if(intermediate.getFinancialAccount() != null) {
+            financialAccountFilling.checkFillingDataFinancialAccount(basicInformationMessage,
+                    sendMessage,
+                    intermediateData
+            );
 
             return;
         }
         if(intermediate.getFinancialChange() != null)
         {
-            //TODO functional
+            fillingAccountChange.balanceChange(basicInformationMessage,
+                    sendMessage,
+                    intermediateData
+            );
+
+            return;
+        }
+
+        if(intermediate.getThoughtUser() != null && sendMessage.getText() == null)
+        {
+            fillingThoughtUser.addTagsAndEmotions(basicInformationMessage,
+                    sendMessage,
+                    intermediateData
+            );
+
+            return;
         }
     }
 }

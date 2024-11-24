@@ -8,9 +8,11 @@ import com.tkachenko.BasicTelegramBot.service.tg.ConstantTgBot;
 import com.tkachenko.BasicTelegramBot.dto.tg.messages.BasicInformationMessage;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.buttons.ButtonReaction;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.CommandReaction;
+import com.tkachenko.BasicTelegramBot.service.tg.respondent.commands.constantElementsCommands.StringConstant;
 import com.tkachenko.BasicTelegramBot.service.tg.respondent.intermediateData.IntermediateProcessing;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.telegram.telegrambots.meta.api.methods.send.SendContact;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Service
@@ -24,17 +26,20 @@ public class MainTGController {
     private final ButtonReaction buttonReaction;
     private final IntermediateProcessing intermediate;
     private final FillingAccountChange fillingAccountChange;
+    private final CommonService commonService;
 
     @Autowired
     public MainTGController(CommandReaction commandReaction,
                             ButtonReaction buttonReaction,
                             IntermediateProcessing intermediate,
-                            FillingAccountChange fillingAccountChange)
+                            FillingAccountChange fillingAccountChange,
+                            CommonService commonService)
     {
         this.commandReaction = commandReaction;
         this.buttonReaction = buttonReaction;
         this.intermediate = intermediate;
         this.fillingAccountChange = fillingAccountChange;
+        this.commonService = commonService;
     }
 
     /**
@@ -70,7 +75,7 @@ public class MainTGController {
 
         if(sendMessage.getText() == null)
         {
-            sendMessage.setText(ConstantTgBot.BASIC_MESSAGE);
+            commonService.replyUnknownMessage(sendMessage);
         }
 
         return sendMessage;
